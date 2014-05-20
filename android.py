@@ -12,9 +12,9 @@ __all__ = ['device', 'ExpectException']
 
 ANDROID_SERIAL = 'ANDROID_SERIAL'
 DEFAULT_RIGHT_DIR_NAME = 'pics'
-DEFAULT_REPORT_DIR_NAME = 'report'
+DEFAULT_REPORT_DIR_NAME = 'tmp'
 WORKING_DIR_PATH = os.getcwd()
-#REPORT_DIR_PATH = join(WORKING_DIR_PATH, DEFAULT_REPORT_DIR_NAME)
+REPORT_DIR_PATH = join(WORKING_DIR_PATH, DEFAULT_REPORT_DIR_NAME)
 #RIGHT_DIR_PATH = join(WORKING_DIR_PATH, DEFAULT_RIGHT_DIR_NAME)
 
 class AndroidDevice(object):
@@ -29,7 +29,7 @@ class AndroidDevice(object):
         '''
         self.serial = os.environ[ANDROID_SERIAL] if os.environ.has_key(ANDROID_SERIAL) else None
         self.working_dir_path = WORKING_DIR_PATH
-        self.report_dir_path = WORKING_DIR_PATH
+        self.report_dir_path = REPORT_DIR_PATH
         self.right_dir_path = WORKING_DIR_PATH
         self.d = Device(self.serial)
         #try:
@@ -223,12 +223,16 @@ class AndroidDevice(object):
         if the wanted image not found raise exception and set test to be failure.
         '''
         expect_image_path = None
+        current_image_path = None
         if os.path.isabs(imagename):
             expect_image_path = imagename
+            current_image_path = join(self.report_dir_path, os.path.basenme(imagename))
         else:
             expect_image_path = join(self.right_dir_path, imagename)
+            current_image_path = join(self.report_dir_path, imagename)       
+
         assert os.path.exists(expect_image_path), 'the local expected image %s not found!' % expect_image_path
-        current_image_path = join(self.report_dir_path, imagename)       
+
         self.d.screenshot(current_image_path)
         assert os.path.exists(current_image_path), 'fetch current screen shot image %s failed!' % imagename
         pos = getMatchedCenterOffset(subPath=expect_image_path, srcPath=current_image_path, threshold=0.01, rotation=rotation)
@@ -265,12 +269,15 @@ class AndroidDevice(object):
         else raise exception. set test to be failure.
         '''
         expect_image_path = None
+        current_image_path = None
         if os.path.isabs(imagename):
             expect_image_path = imagename
+            current_image_path = join(self.report_dir_path, os.path.basenme(imagename))
         else:
             expect_image_path = join(self.right_dir_path, imagename)
+            current_image_path = join(self.report_dir_path, imagename)       
+
         assert os.path.exists(expect_image_path), 'the local expected image %s not found!' % expect_image_path
-        current_image_path = join(self.report_dir_path, imagename)
         begin = time.time()
         while (time.time() - begin < timeout):
             self.d.screenshot(current_image_path)
@@ -285,12 +292,16 @@ class AndroidDevice(object):
         if the expected image found on current screen return true else return false
         '''
         expect_image_path = None
+        current_image_path = None
         if os.path.isabs(imagename):
             expect_image_path = imagename
+            current_image_path = join(self.report_dir_path, os.path.basenme(imagename))
         else:
             expect_image_path = join(self.right_dir_path, imagename)
-        assert os.path.exists(expect_image_path), 'the local expected image %s not found!' % imagename
-        current_image_path = join(self.report_dir_path, imagename)  
+            current_image_path = join(self.report_dir_path, imagename)       
+
+        assert os.path.exists(expect_image_path), 'the local expected image %s not found!' % expect_image_path
+
         begin = time.time()
         isExists = False
         while (time.time() - begin < timeout):
