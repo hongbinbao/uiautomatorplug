@@ -23,7 +23,7 @@ class AndroidDevice(object):
     provide android device event inject, ui object inspect and image comparison.
     '''
 
-    def __init__(self):
+    def __init__(self, seral=None):
         '''
         create device instance.
         '''
@@ -32,7 +32,6 @@ class AndroidDevice(object):
         self.report_dir_path = REPORT_DIR_PATH
         self.right_dir_path = RIGHT_DIR_PATH
         self.d = Device(self.serial)
-        self.d.screenshot = self.screenshot_common
         #try:
         #    if int(self.d.info['sdkInt']) <= 17:
         #        self.d.screenshot = self.screenshot_common
@@ -44,6 +43,8 @@ class AndroidDevice(object):
         forward method/attrbuite to uiautomator device if method support by uiautomator.
         '''
         if hasattr(self.d, attr):
+            if attr == 'screenshot':
+                return self.screenshot_common
             m =  getattr(self.d, attr)
             if inspect.ismethod(m):
                 def wrapper(*args, **kwargs):
@@ -222,11 +223,11 @@ class AndroidDevice(object):
         if the wanted image not found raise exception and set test to be failure.
         ''' 
         expect_image_path = join(self.right_dir_path, imagename)
-        assert os.path.exists(expect_image_path), 'the local expected image %s not found!' % imagename
+        assert os.path.exists(expect_image_path), 'the local expected image %s not found!' % expect_image_path
         current_image_path = join(self.report_dir_path, imagename)       
         self.d.screenshot(current_image_path)
         assert os.path.exists(current_image_path), 'fetch current screen shot image %s failed!' % imagename
-        pos = getMatchedCenterOffset(subPath=expect_image_path, srcPath=current_image_path, threshold=threshold, rotation=rotation)
+        pos = getMatchedCenterOffset(subPath=expect_image_path, srcPath=current_image_path, threshold=0.01, rotation=rotation)
         if not pos:
             reason = 'Fail Reason: The wanted image \'%s\' not found on screen!' % imagename
             raise ExpectException(expect_image_path, current_image_path, reason)
@@ -270,8 +271,8 @@ class AndroidDevice(object):
         else raise exception. set test to be failure.
         '''
         expect_image_path = join(self.right_dir_path, imagename)
-        assert os.path.exists(expect_image_path), 'the local expected image %s not found!' % imagename
-        current_image_path = join(self.report_dir_path, imagename)  
+        assert os.path.exists(expect_image_path), 'the local expected image %s not found!' % expect_image_path
+        current_image_path = join(self.report_dir_path, imagename)
         begin = time.time()
         while (time.time() - begin < timeout):
             self.d.screenshot(current_image_path)
