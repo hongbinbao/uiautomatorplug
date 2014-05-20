@@ -22,13 +22,13 @@ enhancement for the python implement of android uiautomator JSON RPC client. and
     >>> d.start_activity(action='android.intent.action.DIAL', data='tel:xxxx', flags=0x04000000)
     >>> d.find('phone_launch_success.png')
     >>> d.click(100, 200)
-    >>> d.click('DPAD_NUMBER_1.png')
-    >>> d.click('DPAD_NUMBER_1.png', rotation=90)
+    >>> d.click('abspath/DPAD_NUMBER_1.png')
+    >>> d.click('abspath/DPAD_NUMBER_1.png', rotation=90)
     >>> d.exists(text='string_value_of_screen_layout_component_text_attribute')
-    >>> d.expect('phone_launch_success.png')
+    >>> d.expect('abspath/phone_launch_success.png')
     >>> d(text='Settings').click()
     
 #### tips
-    the default serach path of picture resource is the 'pics' folder of current directory: ./pics/image.png
-    def click('image.png')
-    def expect('image.png')
+    the path of picture resource should be absolute path.
+    def click('abspath/image.png')
+    def expect('abspath/image.png')
