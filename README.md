@@ -29,6 +29,6 @@ enhancement for the python implement of android uiautomator JSON RPC client. and
     >>> d(text='Settings').click()
     
 #### tips
-    the default serach path of picture source is the 'pics' folder of current directory: ./pics/image.png
+    the default serach path of picture resource is the 'pics' folder of current directory: ./pics/image.png
     def click('image.png')
     def expect('image.png')
