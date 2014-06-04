@@ -13,6 +13,8 @@ __all__ = ['device', 'ExpectException']
 ANDROID_SERIAL = 'ANDROID_SERIAL'
 DEFAULT_RIGHT_DIR_NAME = 'pics'
 DEFAULT_REPORT_DIR_NAME = 'tmp'
+#[persist.sys.sd.defaultpath]: [/storage/sdcard0]
+DEFAULT_DEVICE_INTERNAL_STORAGE = '/sdcard/'
 WORKING_DIR_PATH = os.getcwd()
 REPORT_DIR_PATH = join(WORKING_DIR_PATH, DEFAULT_REPORT_DIR_NAME)
 #RIGHT_DIR_PATH = join(WORKING_DIR_PATH, DEFAULT_RIGHT_DIR_NAME)
@@ -31,12 +33,16 @@ class AndroidDevice(object):
         self.working_dir_path = WORKING_DIR_PATH
         self.report_dir_path = REPORT_DIR_PATH
         self.right_dir_path = WORKING_DIR_PATH
+        self._internal_storage_dir = DEFAULT_DEVICE_INTERNAL_STORAGE
         self.d = Device(self.serial)
         #try:
         #    if int(self.d.info['sdkInt']) <= 17:
         #        self.d.screenshot = self.screenshot_common
         #except:
         #    pass
+
+    def set_internal_storage_dir(self, path):
+        self._internal_storage_dir = path
 
     def __getattr__(self, attr):
         '''
@@ -249,11 +255,11 @@ class AndroidDevice(object):
         '''
         png = os.path.basename(filename)
         if self.serial:
-            shell('adb -s %s shell screencap /sdcard/%s' % (self.serial, png))
-            shell('adb -s %s pull /sdcard/%s %s' % (self.serial, png, filename))
+            shell('adb -s %s shell screencap %s%s' % (self.serial, self._internal_storage_dir, png))
+            shell('adb -s %s pull %s%s %s' % (self.serial, self._internal_storage_dir, png, filename))
         else:
-            shell('adb shell screencap /sdcard/%s' % png)
-            shell('adb pull /sdcard/%s %s' % (png, filename))
+            shell('adb shell screencap %s%s' % (self._internal_storage_dir, png))
+            shell('adb pull %s%s %s' % (self._internal_storage_dir, png, filename))
         return True
 
     #inspect
