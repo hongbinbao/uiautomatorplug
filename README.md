@@ -13,6 +13,10 @@ enhancement for the python implement of android uiautomator JSON RPC client. and
     3: sudo apt-get install python-numpy
     4: target android device: sdk_version>=16
 
+#### API of uiautomatorplug
+    1: support all API defined in origin uiautomator python binding (https://github.com/xiaocong/uiautomator/blob/master/uiautomator.py)
+    2: expect('x.png'), find('x.png'), click('x.png')
+
 #### Usage
     >>> from uiautomatorplug.android import device as d
     >>> d.info
@@ -28,7 +32,7 @@ enhancement for the python implement of android uiautomator JSON RPC client. and
     >>> d.expect('path/phone_launch_success.png')
     >>> d(text='Settings').click()
     
-#### tips
+#### device configuration
     the screenshot of android device will be captured into device's '/sdcard/' folder as default.
     to change the screenshot saving path on device to be your device real storage path:
     
