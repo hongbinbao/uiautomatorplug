@@ -29,7 +29,7 @@ enhancement for the python implement of android uiautomator JSON RPC client. and
     >>> d(text='Settings').click()
     
 #### tips
-    the screenshot of android will be captured into device '/sdcard/' folder as default.
+    the screenshot of android device will be captured into device's '/sdcard/' folder as default.
     to change the screenshot saving path on device to be your device real storage path:
     
     from uiautomatorplug.android import device as d
