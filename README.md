@@ -29,6 +29,9 @@ enhancement for the python implement of android uiautomator JSON RPC client. and
     >>> d(text='Settings').click()
     
 #### tips
-    the path of picture resource could be absolute path or current directory path.
-    def click('image.png')
-    def expect('image.png')
+    the screenshot of android will be captured into device '/sdcard/' folder as default.
+    to change the screenshot saving path on device to be your device real storage path:
+    
+    from uiautomatorplug.android import device as d
+    d.set_internal_storage_dir('/storage/sdcard1/')
+     
