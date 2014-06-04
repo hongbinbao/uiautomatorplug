@@ -19,6 +19,7 @@ enhancement for the python implement of android uiautomator JSON RPC client. and
 
 #### Usage
     >>> from uiautomatorplug.android import device as d
+    >>> d.set_internal_storage_dir('/storage/sdcard1/') ###default screenshot saving path is '/sdcard/' on device
     >>> d.info
     >>> d.orientation
     >>> d.orientation = 'l'
