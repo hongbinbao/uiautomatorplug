@@ -9,26 +9,34 @@ from uiautomator import Device
 import inspect
 
 __all__ = ['device', 'ExpectException']
+"""public interface"""
 
 ANDROID_SERIAL = 'ANDROID_SERIAL'
+"""android serial number tag defined in system environment"""
+
 DEFAULT_RIGHT_DIR_NAME = 'pics'
+"""the name of folder used to save right picture file saved by user"""
+
 DEFAULT_REPORT_DIR_NAME = 'tmp'
+"""the name of temporary folder created by uiautomatorplug"""
+
 #[persist.sys.sd.defaultpath]: [/storage/sdcard0]
 DEFAULT_DEVICE_INTERNAL_STORAGE = '/sdcard/'
+"""the path of android device's storage"""
+
 WORKING_DIR_PATH = os.getcwd()
+"""current workong directory"""
+
 REPORT_DIR_PATH = join(WORKING_DIR_PATH, DEFAULT_REPORT_DIR_NAME)
-#RIGHT_DIR_PATH = join(WORKING_DIR_PATH, DEFAULT_RIGHT_DIR_NAME)
+"""the name of temporary result folder"""
 
 class AndroidDevice(object):
     '''
-    wrapper for android uiautomator-server binding(pip install uiautomator).
-    provide android device event inject, ui object inspect and image comparison.
+    wrapper for android uiautomator python wrapper (pip install uiautomator).
+    provide more android device event inject, ui object inspect and image comparison.
     '''
 
     def __init__(self, seral=None):
-        '''
-        create device instance.
-        '''
         self.serial = os.environ[ANDROID_SERIAL] if os.environ.has_key(ANDROID_SERIAL) else None
         self.working_dir_path = WORKING_DIR_PATH
         self.report_dir_path = REPORT_DIR_PATH
@@ -85,9 +93,9 @@ class AndroidDevice(object):
         time.sleep(sec)
 
     #device event inject
-    def start_activity(self, **intent_params):
+    def start_activity(self, *argv, **intent_params):
         '''
-        Starts an Activity on the device by sending an Intent which constructed from the specified parameters.     
+        Starts an Activity on the device by sending an Intent which constructed from the specified parameters. 
         The params of Intent supported from adb docs:
         <INTENT> specifications include these flags:
             [-a <ACTION>] [-d <DATA_URI>] [-t <MIME_TYPE>]
@@ -98,6 +106,25 @@ class AndroidDevice(object):
             [-e|--ei <EXTRA_KEY> <EXTRA_INT_VALUE> ...]
             [-n <COMPONENT>] [-f <FLAGS>]
             [<URI>]
+        example: 
+           start avtivity as new task:
+           start_activity('--activity-clear-task', component='com.android.settings/.Settings')
+
+        @type argv: string
+        @param argv: specify the rule of how to start acitivty. the value of argv show as below:
+           [--grant-read-uri-permission] [--grant-write-uri-permission]
+           [--debug-log-resolution] [--exclude-stopped-packages]
+           [--include-stopped-packages]
+           [--activity-brought-to-front] [--activity-clear-top]
+           [--activity-clear-when-task-reset] [--activity-exclude-from-recents]
+           [--activity-launched-from-history] [--activity-multiple-task]
+           [--activity-no-animation] [--activity-no-history]
+           [--activity-no-user-action] [--activity-previous-is-top]
+           [--activity-reorder-to-front] [--activity-reset-task-if-needed]
+           [--activity-single-top] [--activity-clear-task]
+           [--activity-task-on-home]
+           [--receiver-registered-only] [--receiver-replace-pending]
+
         @type intent_params: dictionary 
         @param intent_params: the properties of an Intent. 
                               property support: component/action/data/mimetype/categories/extras/flags/uri
@@ -156,7 +183,8 @@ class AndroidDevice(object):
 
         if 'package' in keys:
             shellcmd.append(intent_params['package'])
-        #sys.stderr.write(str(shellcmd))            
+        if argv:
+            shellcmd.append(*argv)            
         self.d.server.adb.cmd(*shellcmd).communicate()
         return self
 
@@ -266,6 +294,8 @@ class AndroidDevice(object):
     def exists(self, **kwargs):
         '''
         if the expected component exists on current screen layout return true else return false.
+        @rtype: boolean
+        @return:  return True f the expected component exists on current screen layout, else return false.
         '''
         return self.d.exists(**kwargs)
 
@@ -273,6 +303,16 @@ class AndroidDevice(object):
         '''
         if the expected image found on current screen return self 
         else raise exception. set test to be failure.
+        @type imagename: sting
+        @param imagename: the name of picture which expected to find in current screenshot.
+        @type interval: int
+        @param iinterval: the value of interval time
+        @type timeout: int
+        @param timeout: the value of timeout
+        @type threshold: float
+        @param threshold: the value of threshold. 0.0~1.0
+        @type msg: string
+        @param msg: the prompt message content when the expected image not found on current screenshot
         '''
         expect_image_path = None
         current_image_path = None
@@ -296,6 +336,19 @@ class AndroidDevice(object):
     def find(self, imagename, interval=2, timeout=4, threshold=0.01):
         '''
         if the expected image found on current screen return true else return false
+
+        @type imagename: sting
+        @param imagename: the name of picture which expected to find in current screenshot.
+        @type interval: int
+        @param iinterval: the value of interval time
+        @type timeout: int
+        @param timeout: the value of timeout
+        @type threshold: float
+        @param threshold: the value of threshold. 0.0~1.0
+        @type msg: string
+        @param msg: the prompt message content when the expected image not found on current screenshot
+        @rtype: boolean
+        @return:  return True f the expected image found exists on current screenshot, else return false.
         '''
         expect_image_path = None
         current_image_path = None
